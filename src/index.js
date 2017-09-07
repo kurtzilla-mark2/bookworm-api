@@ -6,15 +6,17 @@ import dotenv from 'dotenv';
 import Promise from 'bluebird';
 
 import auth from './routes/auth';
+import users from './routes/users';
 
 dotenv.config();
 
 const app = express();
 app.use(bodyParser.json());
-mongooose.Promise = Promise;// override mongoose promise library with bluebird
+mongoose.Promise = Promise;// override mongoose promise library with bluebird
 mongoose.connect(process.env.MONGODB_URL, { useMongoClient: true });
 
 app.use('/api/auth', auth);
+app.use('/api/users', users);
 
 app.get ('/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
