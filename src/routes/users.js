@@ -2,25 +2,31 @@ import express from 'express';
 import User from '../models/User';
 
 import parseErrors from '../utils/parseErrors';
+import { sendConfirmationEmail } from '../mailer';
 
 const router = express.Router();
 
 router.post('/', (req, res) => {
+  
   const { email, password } = req.body.user;
   const user = new User({ email });
-  user.setPassword(password);
-  user.save()
-  .then(userRecord => res.json({ user: userRecord.toAuthJSON() }))
-  .catch(err => res.status(400).json({ errors: parseErrors(err.errors) }));
 
-  // User.findOne({ email: credentials.email })
-  // .then(user => {
-  //   if(user && user.isValidPassword(credentials.password)) {
-  //     res.json({ user: user.toAuthJSON() });
-  //   } else {
-  //     res.status(400).json({ errors: { global: "Invalid credentials" }});
-  //   }
-  // });
+  user.setPassword(password);
+  user.setConfirmationToken();
+  
+  user.save()
+  .then(userRecord => {
+
+    console.log('SENDING');
+    sendConfirmationEmail(userRecord);
+    console.log('SENT');
+    res.json({ user: userRecord.toAuthJSON() })
+    console.log('not appl');
+  })
+  .catch(err => {
+    console.log('ERR', err)
+    res.status(400).json({ errors: parseErrors(err.errors) })
+  });
 });
 
 export default router;

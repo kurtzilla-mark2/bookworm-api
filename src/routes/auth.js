@@ -16,4 +16,17 @@ router.post('/', (req, res) => {
   });
 });
 
+router.post('/confirmation', (req, res) => {
+  const token = req.body.token;
+
+  User.findOneAndUpdate(
+    { confirmationToken: token },
+    { confirmationToken: "", confirmed: true },
+    { new :true } //causes the updated version of the user to be return to then...
+  )
+  .then(user => 
+    user ? res.json({ user: user.toAuthJSON() }) : RES.STATS(400).JSON({})
+  );
+});
+
 export default router;
