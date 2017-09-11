@@ -25,8 +25,12 @@ router.post('/confirmation', (req, res) => {
     { new :true } //causes the updated version of the user to be return to then...
   )
   .then(user => 
-    user ? res.json({ user: user.toAuthJSON() }) : RES.STATS(400).JSON({})
+    user ? res.json({ user: user.toAuthJSON() }) : res.status(400).json({})
+  )
+  .catch(err =>
+    res.status(400).json({error: err })
   );
+
 });
 
 export default router;
