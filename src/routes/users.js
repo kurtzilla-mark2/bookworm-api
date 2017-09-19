@@ -16,17 +16,24 @@ router.post('/', (req, res) => {
   
   user.save()
   .then(userRecord => {
-
-    console.log('SENDING');
     sendConfirmationEmail(userRecord);
-    console.log('SENT');
-    res.json({ user: userRecord.toAuthJSON() })
-    console.log('not appl');
+    res.json({ user: userRecord.toAuthJSON() });
   })
   .catch(err => {
-    console.log('ERR', err)
     res.status(400).json({ errors: parseErrors(err.errors) })
   });
 });
+
+router.post('/resend_confirmation_email', (req, res) => 
+  User.findOne({ email: req.body.email })
+  .then(user => {
+    if(user) {
+      sendConfirmationEmail(user);
+      res.json({ });
+    } else {
+      res.status(400).json({ errors: { global: "User not found"} })
+    }
+  })
+);
 
 export default router;

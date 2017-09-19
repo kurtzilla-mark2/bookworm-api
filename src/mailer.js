@@ -28,3 +28,37 @@ export function sendConfirmationEmail(user) {
 
   transport.sendMail(email);
 }
+
+export function sendResetPasswordEmail(user) {
+  const transport = setup();
+  const email = {
+    from,
+    to: user.email,
+    subject: "Reset Password",
+    text: `
+    Follow the link to reset your password.
+
+    ${user.generateResetPasswordLink()}
+    `
+  };
+
+  transport.sendMail(email);
+}
+
+export function sendResetPasswordNotificationEmail(user) {
+  const transport = setup();
+  const email = {
+    from,
+    to: user.email,
+    subject: "Your Password has been reset",
+    text: `
+    Your password has been successfully updated.
+
+    If you did not request this password change or believe you're receiving this email in 
+    error, please contact us for immediate assistance.
+
+    `
+  };
+
+  transport.sendMail(email);
+}

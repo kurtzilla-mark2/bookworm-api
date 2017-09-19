@@ -2,9 +2,6 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import uniqueValidator from 'mongoose-unique-validator';
-// import dotenv from 'dotenv';
-
-// dotenv.config();
 
 const schema = new mongoose.Schema({
   email: { 
@@ -15,7 +12,8 @@ const schema = new mongoose.Schema({
     unique: true },
   passwordHash: { type: String, required: true },
   confirmed: { type: Boolean, default: false },
-    confirmationToken: { type: String, default: '' }
+  confirmationToken: { type: String, default: '' },
+  resetPasswordToken: { type: String, default: '' }
   }, 
   { timestamps: true }
 );
@@ -50,6 +48,30 @@ schema.methods.toAuthJSON = function toAuthJSON() {
     token: this.generateJWT()
   }
 };
+
+// TODO make the reset password flow more secure by 
+// storing the token in the db and comparing
+// encode the user id and an expiry into the token
+schema.methods.generateResetPasswordLink = function generateResetPasswordLink() {
+  return `${process.env.HOST}/reset_password/${this.resetPasswordToken}`;
+};
+
+schema.methods.setResetPasswordToken = function setResetPasswordToken() {
+  this.resetPasswordToken = this.generateResetPasswordToken();
+};
+
+schema.methods.generateResetPasswordToken = function generateResetPasswordToken() {
+  return jwt.sign({
+      _id: this._id
+    }, 
+    process.env.JWT_SECRET,
+    { "expiresIn": "1h" }
+  );
+};
+
+schema.methods.sendPasswordChangedNotification = function sendPasswordChangedNotification() {
+
+}
 
 schema.plugin(uniqueValidator, { message: 'This email is already taken' });
 
