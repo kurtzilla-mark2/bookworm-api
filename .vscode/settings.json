@@ -1,0 +1,10 @@
+{
+  "workbench.colorTheme": "Default Dark+",
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#020226",
+    "sideBar.background": "#080844",
+    "editor.background": "#020226",
+    "titleBar.activeBackground": "#00003E",
+    "titleBar.inactiveBackground": "#000099"
+  }
+}
